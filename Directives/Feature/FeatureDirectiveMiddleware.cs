@@ -5,9 +5,8 @@ namespace HC14_Bug.Directives.Feature;
 
 public class FeatureDirectiveMiddleware(FieldDelegate next, Directive directive)
 {
-    public ValueTask Invoke(IMiddlewareContext context)
+    public async Task InvokeAsync(IMiddlewareContext context, IFeatureProvider featureProvider)
     {
-        var featureProvider = context.Services.GetRequiredService<IFeatureProvider>();
         var name = directive.GetArgumentValue<string>("name");
 
         if (!featureProvider.FeatureIsEnabled(name)) {
@@ -15,6 +14,6 @@ public class FeatureDirectiveMiddleware(FieldDelegate next, Directive directive)
             context.Result = null;
         }
 
-        return next.Invoke(context);
+        await next(context);
     }
 }
